@@ -168,8 +168,9 @@ These features are proposed enhancements and are not part of the current impleme
 **Purpose:** To develop a centralized web application for campus incident reporting and emergency contact management.
 
 ## 👥 Contributors
-MUDIMI VARSHA 
-PRADEEBA R S
+- PRADEEBA R S
+- MUDIMI VARSHA 
+
 
 
 This project was developed for academic purposes. Add a suitable open-source license if you intend to distribute and reuse the code under specific terms.
