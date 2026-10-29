@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration — CampusSafe{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card modern-card shadow-sm border-0">
+            <div class="card-header bg-navy text-white text-center p-4" style="background-color: #0f2744;">
+                <i class="bi bi-person-plus-fill text-warning fs-1 mb-2"></i>
+                <h4 class="fw-bold mb-1 text-white">Create Student Account</h4>
+                <p class="text-light small mb-0">Register with your student credentials to submit and track safety incident reports.</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" action="{{ url_for('register') }}" class="needs-validation" novalidate>
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person text-muted"></i></span>
+                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="e.g. Alex Johnson" value="{{ form_data.get('full_name', '') }}" required minlength="2">
+                        </div>
+                        <div class="invalid-feedback">Please enter your complete legal name.</div>
+                    </div>
+
+                    <!-- Student ID & Department -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="student_id" class="form-label fw-semibold">Student ID <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-card-heading text-muted"></i></span>
+                                <input type="text" class="form-control text-uppercase" id="student_id" name="student_id" placeholder="e.g. STU-2024-089" value="{{ form_data.get('student_id', '') }}" required minlength="3">
+                            </div>
+                            <div class="invalid-feedback">Valid Student ID is required.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="department" class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+                            <select class="form-select" id="department" name="department" required>
+                                <option value="" disabled selected>Select Department...</option>
+                                <option value="Computer Science & Engineering" {% if form_data.get('department') == 'Computer Science & Engineering' %}selected{% endif %}>Computer Science &amp; Eng.</option>
+                                <option value="Information Technology" {% if form_data.get('department') == 'Information Technology' %}selected{% endif %}>Information Technology</option>
+                                <option value="Electronics & Communication" {% if form_data.get('department') == 'Electronics & Communication' %}selected{% endif %}>Electronics &amp; Comm.</option>
+                                <option value="Mechanical Engineering" {% if form_data.get('department') == 'Mechanical Engineering' %}selected{% endif %}>Mechanical Engineering</option>
+                                <option value="Biotechnology & Sciences" {% if form_data.get('department') == 'Biotechnology & Sciences' %}selected{% endif %}>Biotechnology &amp; Sciences</option>
+                                <option value="Business Administration" {% if form_data.get('department') == 'Business Administration' %}selected{% endif %}>Business Administration</option>
+                                <option value="Other Department" {% if form_data.get('department') == 'Other Department' %}selected{% endif %}>Other Department</option>
+                            </select>
+                            <div class="invalid-feedback">Please select your department.</div>
+                        </div>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">University or Personal Email <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope text-muted"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="student@university.edu" value="{{ form_data.get('email', '') }}" required>
+                        </div>
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                    </div>
+
+                    <!-- Password & Confirm Password -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock text-muted"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="At least 6 characters" required minlength="6">
+                            </div>
+                            <div class="form-text small">Minimum 6 characters.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-shield-lock text-muted"></i></span>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required minlength="6">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-teal btn-lg fw-semibold">
+                            <i class="bi bi-check2-circle me-1"></i> Register Student Account
+                        </button>
+                    </div>
+
+                    <div class="text-center small text-muted">
+                        Already have an account? <a href="{{ url_for('login') }}" class="text-decoration-none fw-semibold text-primary">Log in here</a>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light text-center p-3 small text-muted border-top">
+                <i class="bi bi-shield-lock me-1 text-teal"></i> Public registration assigns the <strong>student</strong> role. Administrator privileges require backend provisioning.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

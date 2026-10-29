@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Report a Campus Incident — CampusSafe{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9 col-xl-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Report an Incident</li>
+            </ol>
+        </nav>
+
+        <div class="card modern-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white p-4" style="background-color: #0f2744;">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 bg-teal rounded-3 text-white fs-3" style="background-color: #0d9488;">
+                        <i class="bi bi-shield-exclamation"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1 text-white">Campus Incident Report Form</h3>
+                        <p class="mb-0 text-light small">Document safety concerns, hazards, harassment, or infrastructure issues for campus review.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgent Life-Safety Advisory -->
+            <div class="alert alert-warning rounded-0 border-0 border-bottom mb-0 d-flex align-items-center p-3">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                <div class="small">
+                    <strong>Critical Emergency Notice:</strong> If someone is in immediate physical danger, requires urgent medical resuscitation, or there is an active fire, dial emergency services immediately or contact the 24/7 Security Control Room at <strong>0422-2614000</strong>.
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" action="{{ url_for('report_incident') }}" class="needs-validation" novalidate>
+                    <div class="row g-3">
+
+                        <!-- Submitter Info Summary -->
+                        <div class="col-12">
+                            <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center small">
+                                <div>
+                                    <span class="text-muted">Submitting as:</span>
+                                    <strong class="text-dark ms-1">{{ current_user.name }}</strong>
+                                    <span class="text-muted">({{ current_user.email }})</span>
+                                </div>
+                                <span class="badge bg-secondary">Authenticated Student</span>
+                            </div>
+                        </div>
+
+                        <!-- Incident Category -->
+                        <div class="col-md-6">
+                            <label for="incident_type" class="form-label fw-semibold">
+                                Incident Category <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="incident_type" name="incident_type" required>
+                                <option value="" disabled selected>Select incident category...</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat }}" {% if form_data.get('incident_type') == cat %}selected{% endif %}>{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="invalid-feedback">Please select an incident category.</div>
+                        </div>
+
+                        <!-- Urgency Level -->
+                        <div class="col-md-6">
+                            <label for="urgency" class="form-label fw-semibold">
+                                Urgency Level <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="urgency" name="urgency" required>
+                                <option value="" disabled selected>Select urgency level...</option>
+                                <option value="Low" {% if form_data.get('urgency') == 'Low' %}selected{% endif %}>Low (Minor concern, no immediate risk)</option>
+                                <option value="Medium" {% if form_data.get('urgency') == 'Medium' %}selected{% endif %}>Medium (Attention required within 24-48 hours)</option>
+                                <option value="High" {% if form_data.get('urgency') == 'High' %}selected{% endif %}>High (Prompt investigation needed)</option>
+                                <option value="Critical" {% if form_data.get('urgency') == 'Critical' %}selected{% endif %}>Critical (Immediate safety or hazard threat)</option>
+                            </select>
+                            <div class="invalid-feedback">Please select an urgency level.</div>
+                        </div>
+
+                        <!-- Campus Location -->
+                        <div class="col-md-6">
+                            <label for="location" class="form-label fw-semibold">
+                                Campus Location <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="location" name="location" placeholder="e.g. Science Block 3, 2nd Floor Corridor, East Gate" value="{{ form_data.get('location', '') }}" required minlength="3">
+                            <div class="invalid-feedback">Please provide an accurate location (minimum 3 characters).</div>
+                        </div>
+
+                        <!-- Date & Time of Incident -->
+                        <div class="col-md-6">
+                            <label for="incident_datetime" class="form-label fw-semibold">
+                                Date &amp; Time of Incident <span class="text-danger">*</span>
+                            </label>
+                            <input type="datetime-local" class="form-control" id="incident_datetime" name="incident_datetime" value="{{ form_data.get('incident_datetime', '') }}">
+                            <div class="form-text small">Defaults to current time if left blank.</div>
+                        </div>
+
+                        <!-- Incident Description -->
+                        <div class="col-12">
+                            <label for="description" class="form-label fw-semibold">
+                                Detailed Incident Description <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe precisely what happened, individuals involved, hazard details, or sequence of events..." required minlength="15">{{ form_data.get('description', '') }}</textarea>
+                            <div class="invalid-feedback">Please enter a detailed description of at least 15 characters.</div>
+                        </div>
+
+                        <!-- Optional Alternate Contact Information -->
+                        <div class="col-md-6">
+                            <label for="contact_info" class="form-label fw-semibold">
+                                Contact Phone Number <span class="text-muted small">(Optional)</span>
+                            </label>
+                            <input type="text" class="form-control" id="contact_info" name="contact_info" placeholder="e.g. +91 9876543210" value="{{ form_data.get('contact_info', '') }}">
+                            <div class="form-text small">Direct number security can call if clarification is needed.</div>
+                        </div>
+
+                        <!-- Optional Supporting Details -->
+                        <div class="col-md-6">
+                            <label for="supporting_details" class="form-label fw-semibold">
+                                Supporting Details / Witness Info <span class="text-muted small">(Optional)</span>
+                            </label>
+                            <input type="text" class="form-control" id="supporting_details" name="supporting_details" placeholder="e.g. Witnessed by lab assistant; CCTV camera nearby" value="{{ form_data.get('supporting_details', '') }}">
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="col-12 mt-4 pt-2 border-top d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-teal btn-lg px-4">
+                                <i class="bi bi-send-fill me-2"></i> Submit Incident Report
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Review — {{ report.reference_id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_reports') }}">Reports</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ report.reference_id }}</li>
+            </ol>
+        </nav>
+
+        <div class="card modern-card mb-4 shadow-sm">
+            <div class="p-4 bg-navy text-white d-flex flex-wrap justify-content-between align-items-center gap-3" style="background-color: #0f2744;">
+                <div>
+                    <span class="badge bg-warning text-dark mb-1">Administrative Review</span>
+                    <h3 class="fw-bold mb-0 text-white font-monospace">{{ report.reference_id }}</h3>
+                </div>
+                <div>
+                    {% if report.status == 'Resolved' %}
+                        <span class="badge-status-resolved fs-6"><i class="bi bi-check-circle-fill me-1"></i> Resolved</span>
+                    {% elif report.status == 'Under Review' %}
+                        <span class="badge-status-review fs-6"><i class="bi bi-hourglass-split me-1"></i> Under Review</span>
+                    {% else %}
+                        <span class="badge-status-submitted fs-6"><i class="bi bi-send-check me-1"></i> Submitted</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <!-- Reporter & Incident Summary -->
+                <div class="row g-3 mb-4 p-3 bg-light rounded-3">
+                    <div class="col-md-4">
+                        <span class="text-muted small d-block">Reported By:</span>
+                        <strong>{{ report.user_name }}</strong>
+                        <div class="small text-muted">{{ report.user_email }}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="text-muted small d-block">Location:</span>
+                        <strong>{{ report.location }}</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="text-muted small d-block">Category &amp; Urgency:</span>
+                        <span class="badge bg-white text-dark border">{{ report.incident_type }}</span>
+                        {% if report.urgency == 'Critical' %}
+                            <span class="badge badge-urgency-critical ms-1">Critical</span>
+                        {% elif report.urgency == 'High' %}
+                            <span class="badge badge-urgency-high ms-1">High</span>
+                        {% elif report.urgency == 'Medium' %}
+                            <span class="badge badge-urgency-medium ms-1">Medium</span>
+                        {% else %}
+                            <span class="badge badge-urgency-low ms-1">Low</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-navy mb-2"><i class="bi bi-card-text me-2"></i> Student Description</h5>
+                    <div class="p-3 bg-white border rounded-3">
+                        <p class="mb-0 text-dark" style="white-space: pre-wrap;">{{ report.description }}</p>
+                    </div>
+                </div>
+
+                {% if report.contact_info or report.supporting_details %}
+                <div class="row g-3 mb-4">
+                    {% if report.contact_info %}
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <span class="text-muted small d-block">Student Phone Number:</span>
+                            <a href="tel:{{ report.contact_info }}" class="fw-bold text-teal text-decoration-none">
+                                <i class="bi bi-telephone-fill me-1"></i> {{ report.contact_info }}
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if report.supporting_details %}
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <span class="text-muted small d-block">Witness / Supporting Context:</span>
+                            <span>{{ report.supporting_details }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Admin Action Form: Update Status & Add Notes -->
+                <div class="card modern-card p-4 bg-light border-primary border-opacity-25 mb-4">
+                    <h5 class="fw-bold text-primary mb-3">
+                        <i class="bi bi-pencil-square me-2"></i> Update Investigation Status &amp; Notes
+                    </h5>
+                    <form method="POST" action="{{ url_for('admin_report_details', reference_id=report.reference_id) }}">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="status" class="form-label fw-semibold">Report Status <span class="text-danger">*</span></label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="Submitted" {% if report.status == 'Submitted' %}selected{% endif %}>Submitted (New)</option>
+                                    <option value="Under Review" {% if report.status == 'Under Review' %}selected{% endif %}>Under Review (Officer Assigned)</option>
+                                    <option value="Resolved" {% if report.status == 'Resolved' %}selected{% endif %}>Resolved (Action Completed)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="investigation_note" class="form-label fw-semibold">Investigation Note / Action Taken</label>
+                                <input type="text" class="form-control" id="investigation_note" name="investigation_note" placeholder="e.g. CCTV checked; Security patrol dispatched; Hazard fixed by electrical team..." value="{{ report.investigation_notes }}">
+                            </div>
+
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-teal px-4">
+                                    <i class="bi bi-save me-1"></i> Save Changes to MongoDB Atlas
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Audit Trail / History -->
+                <div class="mt-4 pt-3 border-top">
+                    <h5 class="fw-bold text-navy mb-3"><i class="bi bi-clock-history me-2"></i> Audit Trail &amp; Status Transitions</h5>
+                    {% if report.status_history %}
+                    <ul class="timeline">
+                        {% for item in report.status_history %}
+                        <li class="timeline-item">
+                            <span class="timeline-point"></span>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-dark">{{ item.status }}</strong>
+                                <span class="text-muted small">{{ item.changed_at.strftime('%d %b %Y, %I:%M %p') if item.changed_at else '' }}</span>
+                            </div>
+                            <div class="text-muted small">Updated by: <em>{{ item.changed_by }}</em></div>
+                            {% if item.note %}
+                                <div class="small text-secondary mt-1">{{ item.note }}</div>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('admin_reports') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to All Reports
+                </a>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-speedometer2 me-1"></i> Admin Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

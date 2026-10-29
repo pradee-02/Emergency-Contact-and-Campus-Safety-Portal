@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Portal Login — CampusSafe{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-5">
+        <div class="card modern-card shadow border-0">
+            <div class="card-header bg-dark text-white text-center p-4 border-bottom border-warning border-3" style="background-color: #0a192f;">
+                <i class="bi bi-shield-lock-fill text-warning fs-1 mb-2"></i>
+                <h4 class="fw-bold mb-1 text-white">Administrator Portal</h4>
+                <p class="text-secondary small mb-0">Authorized Security &amp; Safety Officers Only</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" action="{{ url_for('admin_login') }}" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Admin Email <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-shield-fill text-muted"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="admin@campus.edu" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Admin Password <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-key-fill text-muted"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter administrative password" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-navy btn-lg fw-semibold" style="background-color: #0f2744; border-color: #0f2744;">
+                            <i class="bi bi-lock-fill me-1 text-warning"></i> Access Safety Dashboard
+                        </button>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 small text-muted mt-4 border">
+                        <div class="fw-bold text-dark mb-1"><i class="bi bi-info-circle text-primary me-1"></i> Setup Note:</div>
+                        Administrator accounts are provisioned securely via <code>python setup_db.py</code> or can be promoted directly in your MongoDB Atlas Data Explorer.
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-footer bg-light text-center p-3 small text-muted border-top">
+                Are you a student? <a href="{{ url_for('login') }}" class="fw-semibold text-primary">Student Login Portal</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

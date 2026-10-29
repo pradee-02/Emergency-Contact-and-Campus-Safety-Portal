@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Contacts Directory — CampusSafe{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Emergency Contacts</li>
+        </ol>
+    </nav>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-telephone-inbound-fill text-teal me-2" style="color: #0d9488;"></i> Campus Emergency Contacts</h2>
+            <p class="text-muted mb-0">Verified emergency helplines, security desks, health triage, and maintenance dispatch.</p>
+        </div>
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('admin_contacts') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-gear-fill me-1"></i> Manage Contacts (Admin)
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Educational Disclaimer Alert -->
+<div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4">
+    <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+    <div class="small">
+        <strong>Academic Demonstration Notice:</strong> The contact numbers shown here are structured for campus demonstration and testing purposes. In a genuine external emergency, please contact your municipal police (100 / 112) or medical dispatch (108).
+    </div>
+</div>
+
+<!-- Search & Category Filters -->
+<div class="card modern-card p-3 mb-4">
+    <form method="GET" action="{{ url_for('emergency_contacts') }}" class="row g-2 align-items-center">
+        <div class="col-md-6 col-lg-7">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="q" class="form-control border-start-0" placeholder="Search by name, department, or keyword..." value="{{ current_query }}">
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-3">
+            <select name="category" class="form-select" onchange="this.form.submit()">
+                <option value="All" {% if not current_category or current_category == 'All' %}selected{% endif %}>All Categories</option>
+                {% for cat in categories %}
+                    <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn btn-teal w-100">Filter</button>
+            {% if current_query or (current_category and current_category != 'All') %}
+                <a href="{{ url_for('emergency_contacts') }}" class="btn btn-outline-secondary" title="Clear Filters">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Contacts Grid -->
+{% if contacts %}
+<div class="row g-4">
+    {% for contact in contacts %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card card-hover h-100 d-flex flex-column">
+            <div class="p-3 border-bottom d-flex justify-content-between align-items-center bg-light">
+                <span class="badge bg-white text-navy border fw-semibold">{{ contact.category }}</span>
+                <span class="badge bg-success-subtle text-success small">
+                    <i class="bi bi-check-circle-fill me-1"></i> Verified
+                </span>
+            </div>
+            <div class="card-body d-flex flex-column flex-grow-1 p-3">
+                <h5 class="fw-bold mb-2 text-dark">{{ contact.name }}</h5>
+                <p class="text-muted small mb-3 flex-grow-1">{{ contact.description }}</p>
+                
+                <div class="p-2 rounded bg-light mb-3">
+                    <div class="small text-muted mb-1"><i class="bi bi-clock-history me-1"></i> Availability:</div>
+                    <div class="fw-semibold small text-dark">{{ contact.availability }}</div>
+                </div>
+
+                <div class="d-grid mt-auto">
+                    <a href="tel:{{ contact.phone }}" class="btn btn-outline-primary fw-bold d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-telephone-fill text-teal"></i>
+                        <span>{{ contact.phone }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card modern-card p-5 text-center my-4">
+    <i class="bi bi-search text-muted fs-1 mb-3"></i>
+    <h4>No Emergency Contacts Found</h4>
+    <p class="text-muted small mb-3">
+        {% if current_query or current_category %}
+            No contacts matched your search query. Try clearing your filters.
+        {% else %}
+            No emergency contacts have been loaded into your MongoDB Atlas database yet.
+        {% endif %}
+    </p>
+    <div>
+        {% if current_query or current_category %}
+            <a href="{{ url_for('emergency_contacts') }}" class="btn btn-outline-primary">Reset Filter</a>
+        {% else %}
+            <p class="small text-muted">Run <code>python setup_db.py</code> in your project directory to seed sample contacts.</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

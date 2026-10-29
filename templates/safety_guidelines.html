@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Campus Safety Guidelines & Protocols — CampusSafe{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Safety Guidelines</li>
+        </ol>
+    </nav>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-shield-check text-teal me-2" style="color: #0d9488;"></i> Campus Safety Guidelines &amp; Protocols</h2>
+            <p class="text-muted mb-0">Practical instructions, incident prevention best practices, and emergency action plans.</p>
+        </div>
+        <a href="{{ url_for('emergency_contacts') }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-telephone-fill me-1"></i> Emergency Directory
+        </a>
+    </div>
+</div>
+
+<!-- Critical Action Notice -->
+<div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4">
+    <i class="bi bi-bell-fill fs-3 me-3 text-danger"></i>
+    <div class="small">
+        <strong>In an Immediate Life-Threatening Situation:</strong> Do not wait for a web form response. Immediately contact the 24/7 Campus Control Room at <strong>0422-2614000</strong> or local emergency dispatch (112).
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Medical Emergencies -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card h-100 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 bg-danger bg-opacity-10 text-danger rounded-3 fs-4">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-navy">Medical Emergencies</h5>
+            </div>
+            <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                <li><i class="bi bi-dot text-danger fs-5"></i> <strong>Call the Health Centre:</strong> Contact the campus dispensary or medical ward at 0422-2614108 immediately.</li>
+                <li><i class="bi bi-dot text-danger fs-5"></i> <strong>Do Not Move Victims:</strong> If spinal trauma, heavy bleeding, or fracture is suspected, keep the individual stationary unless environmental threat persists.</li>
+                <li><i class="bi bi-dot text-danger fs-5"></i> <strong>First Aid Kits:</strong> Accessible in all laboratory corridors, department offices, and sports complexes.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Fire Hazard & Evacuation -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card h-100 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 bg-warning bg-opacity-10 text-warning rounded-3 fs-4">
+                    <i class="bi bi-fire"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-navy">Fire Hazards &amp; Evacuation</h5>
+            </div>
+            <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                <li><i class="bi bi-dot text-warning fs-5"></i> <strong>Pull the Alarm:</strong> Activate the nearest manual break-glass call point.</li>
+                <li><i class="bi bi-dot text-warning fs-5"></i> <strong>Stairs Only:</strong> Never utilize elevators during an active fire or electrical outage.</li>
+                <li><i class="bi bi-dot text-warning fs-5"></i> <strong>Designated Assembly Points:</strong> Assemble at open sports grounds or marked campus quadrangles. Remain accounted for.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Harassment & Personal Safety -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card h-100 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 bg-info bg-opacity-10 text-info rounded-3 fs-4">
+                    <i class="bi bi-person-fill-lock"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-navy">Harassment &amp; Anti-Ragging</h5>
+            </div>
+            <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                <li><i class="bi bi-dot text-info fs-5"></i> <strong>Strict Zero-Tolerance:</strong> University policy strictly criminalizes physical or psychological bullying, intimidation, and unauthorized hazing.</li>
+                <li><i class="bi bi-dot text-info fs-5"></i> <strong>Confidential Support:</strong> Contact the Women's Safety Cell or counseling mentors; identity protection is safeguarded.</li>
+                <li><i class="bi bi-dot text-info fs-5"></i> <strong>Document Evidence:</strong> Preserve electronic messages, screenshots, dates, and names of individuals present.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Suspicious Activities -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card h-100 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 bg-primary bg-opacity-10 text-primary rounded-3 fs-4">
+                    <i class="bi bi-eye"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-navy">Suspicious Activities</h5>
+            </div>
+            <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                <li><i class="bi bi-dot text-primary fs-5"></i> <strong>Unattended Items:</strong> Never touch unattended packages, luggage, or suspicious parcels in academic buildings.</li>
+                <li><i class="bi bi-dot text-primary fs-5"></i> <strong>Unauthorized Personnel:</strong> Report individuals loitering near residential dormitories or restricted lab rooms without valid student/staff IDs.</li>
+                <li><i class="bi bi-dot text-primary fs-5"></i> <strong>Log Details:</strong> Note clothing, vehicle license plates, or specific directions of movement.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Theft & Property Security -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card h-100 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 bg-secondary bg-opacity-10 text-secondary rounded-3 fs-4">
+                    <i class="bi bi-lock"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-navy">Theft Prevention</h5>
+            </div>
+            <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                <li><i class="bi bi-dot text-secondary fs-5"></i> <strong>Secure Belongings:</strong> Never leave laptops, mobile phones, or backpacks unattended in libraries, cafeteria booths, or lecture halls.</li>
+                <li><i class="bi bi-dot text-secondary fs-5"></i> <strong>Bicycle Locks:</strong> Always lock bicycles to designated metal racks using a hardened U-lock or reinforced steel cable.</li>
+                <li><i class="bi bi-dot text-secondary fs-5"></i> <strong>Report Immediately:</strong> Log theft reports on this portal to trigger security camera audit requests.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Safe Movement Around Campus -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card modern-card h-100 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <div class="p-2 bg-success bg-opacity-10 text-success rounded-3 fs-4">
+                    <i class="bi bi-moon-stars"></i>
+                </div>
+                <h5 class="fw-bold mb-0 text-navy">Nighttime Movement</h5>
+            </div>
+            <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-0">
+                <li><i class="bi bi-dot text-success fs-5"></i> <strong>Well-Lit Pathways:</strong> Stick to arterial campus roads lined with active security lighting. Avoid unlit shortcuts or dense tree corridors after sunset.</li>
+                <li><i class="bi bi-dot text-success fs-5"></i> <strong>Buddy System:</strong> Walk with peers when returning from evening library study hours or lab sessions.</li>
+                <li><i class="bi bi-dot text-success fs-5"></i> <strong>Security Patrol Escort:</strong> Campus security patrol vehicles are available to escort students between blocks during late hours.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Personal Privacy & Responsible Reporting -->
+<div class="card modern-card p-4 p-md-5 mt-4 bg-white">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <h4 class="fw-bold text-navy mb-2">Responsible Incident Reporting</h4>
+            <p class="text-muted small mb-3">
+                When filing an incident report via CampusSafe, provide factual, objective details without speculative claims. Submitting false reports compromises emergency personnel and wastes critical safety resources.
+            </p>
+            <p class="text-muted small mb-0">
+                <strong>Data Protection:</strong> All incident data is stored securely in your MongoDB Atlas cluster. Passwords are encrypted with cryptographic salts, and student identities are protected in accordance with university confidentiality standards.
+            </p>
+        </div>
+        <div class="col-lg-4 text-center">
+            <a href="{{ url_for('report_incident') }}" class="btn btn-teal btn-lg">
+                <i class="bi bi-pencil-square me-2"></i> Submit a Report
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

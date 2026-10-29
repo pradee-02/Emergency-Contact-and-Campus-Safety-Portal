@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}My Incident Reports — CampusSafe{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="{{ url_for('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Reports</li>
+        </ol>
+    </nav>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-file-earmark-medical-fill text-teal me-2" style="color: #0d9488;"></i> My Incident Reports</h2>
+            <p class="text-muted mb-0">Track all safety and incident concerns submitted under your student account.</p>
+        </div>
+        <a href="{{ url_for('report_incident') }}" class="btn btn-teal">
+            <i class="bi bi-plus-circle me-1"></i> Submit New Report
+        </a>
+    </div>
+</div>
+
+<!-- Status Filters -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="{{ url_for('my_reports') }}" class="btn btn-sm {% if not current_status %}btn-navy{% else %}btn-outline-navy{% endif %}">
+        All ({{ reports|length }})
+    </a>
+    <a href="{{ url_for('my_reports', status='Submitted') }}" class="btn btn-sm {% if current_status == 'Submitted' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Submitted
+    </a>
+    <a href="{{ url_for('my_reports', status='Under Review') }}" class="btn btn-sm {% if current_status == 'Under Review' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+        Under Review
+    </a>
+    <a href="{{ url_for('my_reports', status='Resolved') }}" class="btn btn-sm {% if current_status == 'Resolved' %}btn-success{% else %}btn-outline-success{% endif %}">
+        Resolved
+    </a>
+</div>
+
+{% if reports %}
+<div class="card modern-card overflow-hidden shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" class="ps-4">Reference ID</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Reported Date</th>
+                    <th scope="col">Urgency</th>
+                    <th scope="col">Status</th>
+                    <th scope="col" class="text-end pe-4">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td class="ps-4 font-monospace fw-bold text-navy">
+                        {{ report.reference_id }}
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">{{ report.incident_type }}</span>
+                    </td>
+                    <td class="text-secondary small">{{ report.location }}</td>
+                    <td class="text-secondary small">
+                        {{ report.created_at.strftime('%d %b %Y, %I:%M %p') if report.created_at else 'N/A' }}
+                    </td>
+                    <td>
+                        {% if report.urgency == 'Critical' %}
+                            <span class="badge badge-urgency-critical">Critical</span>
+                        {% elif report.urgency == 'High' %}
+                            <span class="badge badge-urgency-high">High</span>
+                        {% elif report.urgency == 'Medium' %}
+                            <span class="badge badge-urgency-medium">Medium</span>
+                        {% else %}
+                            <span class="badge badge-urgency-low">Low</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if report.status == 'Resolved' %}
+                            <span class="badge-status-resolved"><i class="bi bi-check-circle-fill me-1"></i> Resolved</span>
+                        {% elif report.status == 'Under Review' %}
+                            <span class="badge-status-review"><i class="bi bi-hourglass-split me-1"></i> Under Review</span>
+                        {% else %}
+                            <span class="badge-status-submitted"><i class="bi bi-send-check me-1"></i> Submitted</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-4">
+                        <a href="{{ url_for('report_details', reference_id=report.reference_id) }}" class="btn btn-sm btn-outline-primary">
+                            Details <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card modern-card p-5 text-center my-4">
+    <i class="bi bi-inbox text-muted fs-1 mb-3"></i>
+    <h4 class="fw-bold">No Reports Found</h4>
+    <p class="text-muted small mb-4">
+        {% if current_status %}
+            You have no reports currently marked as '{{ current_status }}'.
+        {% else %}
+            You have not submitted any incident reports yet.
+        {% endif %}
+    </p>
+    <div>
+        <a href="{{ url_for('report_incident') }}" class="btn btn-teal">
+            <i class="bi bi-pencil-square me-1"></i> Submit an Incident Report
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

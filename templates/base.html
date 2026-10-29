@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusSafe — Emergency Contact and Campus Safety Portal{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-logo" href="{{ url_for('home') }}">
+                <i class="bi bi-shield-check text-warning fs-3"></i>
+                <span class="fw-bold">Campus<span class="text-teal" style="color: #2dd4bf;">Safe</span></span>
+                <span class="brand-badge ms-1 d-none d-sm-inline-block">PORTAL</span>
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{{ url_for('home') }}">
+                            <i class="bi bi-house-door me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/contacts' %}active{% endif %}" href="{{ url_for('emergency_contacts') }}">
+                            <i class="bi bi-telephone me-1"></i> Emergency Contacts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/guidelines' %}active{% endif %}" href="{{ url_for('safety_guidelines') }}">
+                            <i class="bi bi-journal-medical me-1"></i> Safety Guidelines
+                        </a>
+                    </li>
+
+                    {% if current_user.is_authenticated and not current_user.is_admin %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/my-reports' %}active{% endif %}" href="{{ url_for('my_reports') }}">
+                            <i class="bi bi-file-earmark-text me-1"></i> My Reports
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if current_user.is_admin %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-warning fw-semibold" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-shield-lock me-1"></i> Admin Panel
+                        </a>
+                        <ul class="dropdown-menu shadow border-0" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_reports') }}"><i class="bi bi-clipboard2-check me-2"></i> Manage Incident Reports</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_contacts') }}"><i class="bi bi-person-lines-fill me-2"></i> Manage Emergency Contacts</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-flex align-items-center gap-2">
+                    <a href="{{ url_for('report_incident') }}" class="btn btn-teal btn-sm shadow-sm">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Report Incident
+                    </a>
+
+                    {% if current_user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light btn-sm dropdown-toggle d-flex align-items-center gap-1" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                            <span class="d-none d-md-inline ms-1">{{ current_user.name }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenu">
+                            <li class="px-3 py-1 text-muted small border-bottom">
+                                Role: <strong class="text-capitalize">{{ current_user.role }}</strong>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="bi bi-person me-2"></i> My Profile</a></li>
+                            {% if not current_user.is_admin %}
+                            <li><a class="dropdown-item" href="{{ url_for('my_reports') }}"><i class="bi bi-card-checklist me-2"></i> My Reports</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Log Out</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-warning btn-sm fw-semibold">
+                        Register
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Safety Alerts Banner (from MongoDB Atlas) -->
+    {% if active_alerts %}
+        <div class="bg-primary text-white py-2 px-3 border-bottom shadow-sm">
+            <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+                {% for alert in active_alerts %}
+                <div class="d-flex align-items-center small">
+                    <span class="badge bg-warning text-dark me-2"><i class="bi bi-bell-fill me-1"></i> {{ alert.severity }}</span>
+                    <strong>{{ alert.title }}:</strong>&nbsp;{{ alert.message }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Database Configuration Advisory Banner if MONGO_URI is missing or unverified -->
+    {% if not mongo_configured %}
+    <div class="alert alert-warning mb-0 border-0 rounded-0 py-2">
+        <div class="container small d-flex align-items-center justify-content-between">
+            <div>
+                <i class="bi bi-database-exclamation me-1 fs-6"></i>
+                <strong>MongoDB Atlas Setup Pending:</strong> Please add your Atlas connection string to <code>.env</code> and run <code>python setup_db.py</code> to initialize your live database collections.
+            </div>
+            <a href="https://www.mongodb.com/cloud/atlas" target="_blank" rel="noopener" class="btn btn-outline-dark btn-sm py-0">Atlas Console</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Flash Messages Container -->
+    <main class="py-3">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi {% if category == 'success' %}bi-check-circle-fill{% elif category == 'danger' %}bi-exclamation-octagon-fill{% elif category == 'warning' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Consistent Footer -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-white">
+                        <i class="bi bi-shield-check text-warning fs-4"></i>
+                        <h5 class="mb-0 fw-bold">CampusSafe</h5>
+                    </div>
+                    <p class="small text-secondary">
+                        Centralized Campus Safety and Emergency Services Portal. Dedicated to 24/7 student protection, rapid hazard remediation, anti-harassment enforcement, and emergency response.
+                    </p>
+                    <div class="footer-disclaimer-box mb-3">
+                        <strong class="text-warning"><i class="bi bi-shield-exclamation me-1"></i> Emergency Desk:</strong>
+                        In any immediate life-threatening emergency, call the national emergency line (112 / 100) or contact campus security control immediately.
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 col-6">
+                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        <li><a href="{{ url_for('home') }}">Home Portal</a></li>
+                        <li><a href="{{ url_for('emergency_contacts') }}">Emergency Helplines</a></li>
+                        <li><a href="{{ url_for('safety_guidelines') }}">Safety Protocols</a></li>
+                        <li><a href="{{ url_for('report_incident') }}">Report an Incident</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 col-6">
+                    <h6 class="text-white fw-bold mb-3">Account & Access</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2">
+                        {% if current_user.is_authenticated %}
+                            <li><a href="{{ url_for('profile') }}">My Profile</a></li>
+                            {% if not current_user.is_admin %}
+                            <li><a href="{{ url_for('my_reports') }}">My Submitted Reports</a></li>
+                            {% else %}
+                            <li><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                            {% endif %}
+                            <li><a href="{{ url_for('logout') }}">Log Out</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('login') }}">Student Login</a></li>
+                            <li><a href="{{ url_for('register') }}">Student Registration</a></li>
+                            <li><a href="{{ url_for('admin_login') }}">Administrator Portal</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="text-white fw-bold mb-3">Emergency Desks</h6>
+                    <p class="small mb-1 text-light"><i class="bi bi-telephone-fill text-warning me-1"></i> Security: <strong>0422-2614000</strong></p>
+                    <p class="small mb-1 text-light"><i class="bi bi-hospital text-danger me-1"></i> Health Centre: <strong>0422-2614108</strong></p>
+                    <p class="small mb-1 text-light"><i class="bi bi-shield-lock text-info me-1"></i> Anti-Harassment: <strong>0422-2614112</strong></p>
+                    <p class="small mb-1 text-light"><i class="bi bi-fire text-warning me-1"></i> Fire Response: <strong>0422-2614101</strong></p>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+                <div>&copy; {{ current_year }} CampusSafe — Campus Safety &amp; Emergency Response Portal. All rights reserved.</div>
+                <div class="mt-2 mt-md-0">
+                    <span class="text-muted">Main Campus Security Command &amp; Control Centre &bull; Open 24/7 / 365 Days</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
